@@ -1,0 +1,32 @@
+<?prg 
+#include "lib/uhttpd2/uhttpd2.ch" 
+
+	LOCAL oDb := WDO_SQLITE3():New( "data\master.db" )
+	LOCAL o 	
+	
+	?? '<b>Version</b> ' +  oDb:VersionName() +  '<small style="float:right;">' + time() + '</small><hr>'
+	
+		?? '<h3>Data Base Customer</h3><hr>'
+		
+		cSql 	:= "SELECT count(*) as total FROM customer"
+		
+		o 	:= oDb:Query( cSql )
+		
+		oRow  := o:Row(.t.)
+
+		? 'Total Customer: ', oRow[ 'total' ]
+		
+		//		"WHERE ( c.state = 'LA' OR c.state = 'AK' ) and c.age >= 58 and c.age <= 60 " +;
+		
+		cSql := "SELECT c.id, c.first, c.last, c.state, s.name, c.age FROM customer c " +;
+		        "LEFT JOIN states s ON s.code = c.state " +;
+				"WHERE c.age > 90 " + ;
+				"ORDER by first	"	
+
+		o 	:= oDb:Query( cSql )				
+		
+		? 'Total query: ' , o:Count()
+		? 
+		? o:View()				
+RETU ''
+?>

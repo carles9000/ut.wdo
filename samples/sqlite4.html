@@ -1,0 +1,51 @@
+<?prg 
+#include "lib/uhttpd2/uhttpd2.ch" 
+
+	LOCAL oDb := WDO_SQLITE3():New( "data\master.db" )
+	LOCAL o 	
+	
+	?? '<b>Version</b> ' +  oDb:VersionName() +  '<small style="float:right;">' + time() + '</small><hr>'
+
+	? '<h4>Test Prepare sentence</h4><hr>'
+	
+	
+	? "o := oDb:Prepare( 'INSERT INTO customer( first, age ) VALUES( :first, :age )' )"
+	? "	o:bind( ':first', 'TEST123' )"
+	? "	o:bind( ':age', HB_RandomInt( 1, 100 ) )"
+	? "	o:exec()		"
+	? "<hr>"
+	?	
+
+	o := oDb:Prepare( 'INSERT INTO customer( first, age ) VALUES( :first, :age )' )
+		o:bind( ':first', 'TEST123' )
+		o:bind( ':age', HB_RandomInt( 1, 100 ) )
+		o:Exec()		
+		
+	o := oDb:Prepare( 'INSERT INTO customer( first, age ) VALUES( :first, :age )' )
+		o:bind( ':first', 'TEST123' )
+		o:bind( ':age', HB_RandomInt( 1, 100 ) )		
+		o:Exec()		
+	
+	o := oDb:Prepare( 'INSERT INTO customer( first, age ) VALUES( :first, :age )' )
+		o:bind( ':first', 'TEST123' )
+		o:bind( ':age', HB_RandomInt( 1, 100 ) )
+		o:Exec()		
+		
+	
+	o := oDb:Query( "select * from customer where first = 'TEST123' " )	
+	
+		o:FetchAll( .F. )	
+		? o:View()			
+		
+	? "<h3>Delete first = 'TEST123' </h3>"		
+	
+	o := oDb:Query( "delete FROM customer WHERE first = 'TEST123' " ) 
+		
+	o := oDb:Query( "select * from customer where first = 'TEST123' " )	
+	
+		o:FetchAll( .F. )	
+		? o:View()		
+
+		
+RETU ''
+?>

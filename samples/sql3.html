@@ -1,0 +1,26 @@
+<?prg 
+#include "lib/uhttpd2/uhttpd2.ch" 
+	LOCAL o, oRs
+	
+		o := WDO_MYSQL():New( "localhost", "harbour", "hb1234", "dbHarbour", 3306 )	
+
+		?? '<b>Version</b> ' +  o:VersionName() +  '<small style="float:right;">' + time() + '</small><hr>'		
+	
+		IF ! o:lConnect		
+			? 'Error : ', o:cError
+			RETU NIL
+		ENDIF
+
+		
+		IF !empty( hRes := o:Query( 'select * from sellers' ) )
+		
+			aData := o:FetchAll( hRes )
+			
+			o:View( o:DbStruct(),	aData )
+			
+			o:Free_Result( hRes )
+		
+		ENDIF			
+
+	RETU ''
+?>

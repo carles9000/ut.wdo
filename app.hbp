@@ -1,0 +1,27 @@
+-oapp.gbin{gcc}
+-n
+-w1
+-es2
+-inc
+-head=full
+-mt
+-workdir=.hbmk/sample/${hb_compiler}
+
+app\app.prg
+
+{gcc}-Llib\uhttpd2\gcc
+{msvc64}-Llib\uhttpd2\msvc64
+-luhttpd2
+
+{gcc}-Llib\wdo\gcc
+{msvc64}-Llib\wdo\msvc64
+-lwdo
+
+{win}-Llib\sqlite3
+{win}-lhbsqlite3
+{win}-lsqlite3
+
+
+# WAPI_OutputDebugString()
+{win}hbwin.hbc
+xhb.hbc

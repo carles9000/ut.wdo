@@ -1,0 +1,24 @@
+# incremental mode
+-inc
+-head=full
+-workdir=.hbmk/wdo/${hb_compiler}
+
+# create library
+-hblib
+
+# output filename
+-olib/wdo/${hb_compiler}/${hb_name}
+
+# harbour compiler flags
+-n
+-w2
+-es2
+-q0
+-gc2
+
+# files
+src/wdo.prg
+src/wdo_dbf.prg
+src/wdo_mysql.prg
+{win}src/wdo_sqlite3.prg
+src/legacy_func.c

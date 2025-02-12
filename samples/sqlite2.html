@@ -1,0 +1,36 @@
+<?prg 
+#include "lib/uhttpd2/uhttpd2.ch" 
+
+	LOCAL oDb := WDO_SQLITE3():New( "data\master.db" )
+	LOCAL n
+	
+	?? '<b>Version</b> ' +  oDb:VersionName() +  '<small style="float:right;">' + time() + '</small><hr>'	
+	
+	//o := oDb:Query( "select id, first, age from customer where age > 90 " )	
+	o := oDb:Query( "select * from customer where age > 90 " )	
+	
+	//	Info
+	
+	? 'Count: ', o:Count()			
+	? 'Fields: ',  o:FCount()	
+	?
+
+	//	Array		
+	
+		? '<b>Table via array</b><hr>'
+		
+		aRows := o:FetchAll( .F. )	
+		? o:View()
+		
+
+	//	Associative array
+	
+		? '<b>Table via array hashes</b><hr>'
+	
+		aRows := o:FetchAll( .T. )	
+		? o:View()
+	
+		
+RETU ''
+
+?>

@@ -1,0 +1,79 @@
+<?prg 
+#include "lib/uhttpd2/uhttpd2.ch" 
+
+	LOCAL oDb := WDO_SQLITE3():New( "data\master.db" )
+	LOCAL cTag, o 
+	LOCAL cSql:= ''
+	
+	?? '<b>Version</b> ' +  oDb:VersionName() +  '<small style="float:right;">' + time() + '</small><hr>'	
+
+	cTag := ltrim(str(hb_milliseconds()))
+	
+	? "<h4>Test 3 Querys</h4><hr>"
+	? "INSERT INTO customer (first, age) VALUES ('zzz123', '80')"
+	? "INSERT INTO customer (first, age) VALUES ('zzz123', '84')"
+	? "INSERT INTO customer (first, age) VALUES ('zzz123', '83')"
+	? "<hr>"
+	?	
+	
+	? "<h3>Insert 3 Registers with first = " + cTag + "</h3>"			
+
+	oDb:Query( "INSERT INTO customer (first, age) VALUES ('" + cTag + "', '80')" ) 								
+	oDb:Query( "INSERT INTO customer (first, age) VALUES ('" + cTag + "', '84')" ) 
+	oDb:Query( "INSERT INTO customer (first, age) VALUES ('" + cTag + "', '83')" ) 
+		
+
+	o := oDb:Query( "select * from customer where first = '" + cTag + "' " )	
+	
+		o:FetchAll( .F. )	
+		? o:View()	
+		
+		
+	? "<h3>Delete first = '" + cTag + "' </h3>"		
+	
+	o := oDb:Query( "delete FROM customer WHERE first = '" + cTag + "' " ) 
+		
+	o := oDb:Query( "select * from customer where first = '" + cTag + "' " )	
+	
+		o:FetchAll( .F. )	
+		? o:View()	
+
+		
+	? "<h3>Transaction. Insert 3 Registers with first = 'TEST123' </h3>"	
+	
+	TEXT TO cSql
+		BEGIN TRANSACTION;
+			INSERT INTO customer ( first, age ) VALUES( 'TEST123', 52 );
+			INSERT INTO customer ( first, age ) VALUES( 'TEST123', 40 );
+			INSERT INTO customer ( first, age ) VALUES( 'TEST123', 25 );			
+		COMMIT;
+	ENDTEXT	
+	
+	? "<h4>Test Transaction and group sentences</h4><hr>"
+	? "BEGIN TRANSACTION;"
+	? "	INSERT INTO customer ( first, age ) VALUES( 'TEST123', 52 );"
+	? "	INSERT INTO customer ( first, age ) VALUES( 'TEST123', 40 );"
+	? "	INSERT INTO customer ( first, age ) VALUES( 'TEST123', 25 );"
+	? "COMMIT;<hr>"
+	? 	
+	
+	oDb:Query( cSql )	
+	
+	o := oDb:Query( "select * from customer where first = 'TEST123' " )		
+	
+		o:FetchAll( .F. )	
+		? o:View()	
+		
+	? "<h3>Delete first = 'TEST123' </h3>"		
+	
+	o := oDb:Query( "delete FROM customer WHERE first = 'TEST123' " ) 
+		
+	o := oDb:Query( "select * from customer where first = 'TEST123' " )	
+	
+		o:FetchAll( .F. )	
+		? o:View()		
+
+		
+RETU ''
+
+?>

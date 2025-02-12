@@ -1,0 +1,75 @@
+<?prg 
+#include "lib/uhttpd2/uhttpd2.ch" 
+
+	LOCAL oDb := WDO_SQLITE3():New( "data\master.db" )
+	LOCAL n
+	
+	?? '<b>Version</b> ' +  oDb:VersionName() +  '<small style="float:right;">' + time() + '</small><hr>'	
+	
+	//o := oDb:Query( "select id, first, age from customer where age > 90 " )	
+	o := oDb:Query( "select * from customer where age > 90 " )	
+	
+	//	Info
+	
+	? 'Count: ', o:Count()			
+	? 'Fields: ',  o:FCount()	
+	?
+
+	//	Array
+	
+	aRows := o:FetchAll( .F. )
+	
+	? 'Table via array<hr>'
+	
+		?? '<table border="1">'
+		?? '<tr>'
+		
+		for i := 1 to o:nCols
+			?? '<td><b>' + o:aCols[i] + '</b></td>'
+		next	
+		
+		?? '</tr>'
+		
+		for i := 1 to o:nRows
+			?? '<tr>'
+
+			for j := 1 to o:nCols 
+				?? '<td>' + aRows[i][j] + '</td>'					
+			next
+			
+			?? '</tr>'
+		next	
+		
+		?? '</table>'
+		
+	
+	//	Associative array
+	
+	aRows := o:FetchAll( .T. )
+	
+	? 'Table via array hashes<hr>'
+	
+		?? '<table border="1">'
+		?? '<tr>'
+		
+		for i := 1 to o:nCols
+			?? '<td><b>' + o:aCols[i] + '</b></td>'
+		next	
+		
+		?? '</tr>'
+		
+		for i := 1 to o:nRows
+			?? '<tr>'
+
+			for j := 1 to o:nCols 
+				?? '<td>' + HB_HValueAt( aRows[i], j ) + '</td>'					
+			next
+			
+			?? '</tr>'
+		next	
+		
+		?? '</table>'
+		
+RETU ''
+
+?>
