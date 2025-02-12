@@ -20,9 +20,9 @@ psw:hb1234
 
 |               | WIN | LINUX |
 |---------------|-----|-------|
-| WDO_DBF       |  X  |   X   |
-| WDO_MYSQL     |  X  |   X   |
-| WDO_SQLITE3   |  X  |   -   |
+| WDO_DBF       | <div align="center">X</div>   | <div align="center">X</div>     |
+| WDO_MYSQL     | <div align="center">X</div>   | <div align="center">X</div>     |
+| WDO_SQLITE3   | <div align="center">X</div>   | <div align="center">Not yet</div>     |
 
 <hr>
 
