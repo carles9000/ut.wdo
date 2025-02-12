@@ -18,10 +18,11 @@ psw:hb1234
 
 <hr>
 
-                WIN  LINUX
-WDO_DBF      	 X     X
-WDO_MYSQL        X     X
-WDO_SQLITE3      X     -
+|               | WIN | LINUX |
+|---------------|-----|-------|
+| WDO_DBF       |  X  |   X   |
+| WDO_MYSQL     |  X  |   X   |
+| WDO_SQLITE3   |  X  |   -   |
 
 <hr>
 
