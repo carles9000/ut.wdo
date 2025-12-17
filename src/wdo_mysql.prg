@@ -17,7 +17,7 @@
 #xcommand FINALLY => ALWAYS
 #xtranslate Throw( <oErr> ) => ( Eval( ErrorBlock(), <oErr> ), Break( <oErr> )
 
-#define VERSION_WDO_MYSQL					'1.0'
+#define VERSION_WDO_MYSQL					'1.1'
 
 #define HB_VERSION_BITWIDTH  				17
 #define NULL  								0  
@@ -51,6 +51,7 @@ CLASS WDO_MySql FROM WDO
 	DATA nSysCallConv
 	DATA nSysLong
 	DATA nTypePos
+	DATA cDllType
 	
 	CLASSDATA lUtf8 							INIT .F.
 	
@@ -90,10 +91,12 @@ CLASS WDO_MySql FROM WDO
 	METHOD mysql_fetch_row( hRes )
 	METHOD mysql_free_result( hRes )
 	METHOD mysql_real_escape_string_quote( cQuery )	
+	METHOD mysql_get_client_info()
 
 	
 	METHOD Version()						INLINE VERSION_WDO_MYSQL
 	METHOD VersionName()					INLINE 'WDO_MYSQL ' + VERSION_WDO_MYSQL
+	METHOD GetDllVersion()
 
 	METHOD Exit()
 	METHOD Close()
@@ -122,7 +125,7 @@ METHOD New( cServer, cUsername, cPassword, cDatabase, nPort, cType, lLog, bError
 	endif
 		
 	::cServer		:= cServer
-	::cUserName	:= cUserName
+	::cUserName		:= cUserName
 	::cPassword 	:= cPassword
 	::cDatabase 	:= cDatabase
 	::nPort 		:= nPort	
@@ -132,21 +135,30 @@ METHOD New( cServer, cUsername, cPassword, cDatabase, nPort, cType, lLog, bError
 
 	//	Cargamos lib mysql
 	
-		IF cType == 'MYSQL'
-			cDll 	:= hb_SysMySQL() 
-		ELSE
-			cDll 	:= hb_SysMariaDb() 
-		ENDIF	
-	
+		cType := Upper( cType )
+		
+		DO CASE 
+			CASE cType == 'MYSQL' 		
+				::cDllType := 'MySql'
+				cDll 	:= hb_SysMySQL() 
+			CASE cType == 'MARIADB' 	
+				::cDllType := 'MariaDB'
+				cDll 	:= hb_SysMariaDb() 
+			OTHERWISE 
+				::SetError(  "Error: Library type:  " + cType )
+				retu self 		
+		ENDCASE							
+
 		::pLib 	:= hb_LibLoad( cDll )	
+
 
 		If ValType( ::pLib ) <> "P" 
 		
 			if( ::lLog, _d( 'WDO ' + ::cError + ' ' + cDll ), nil )
 			
-			::SetError(  "Error (MySQL library not found)" )
+			::SetError(  "Error: MySQL library wrong: " + lower( cDll ) )
 			
-			RETU Self
+			RETU NIL
 		ENDIF
 		
 	//	Inicializamos Variables 
@@ -722,6 +734,22 @@ retu u
 //                   ::nSysCallConv, ::nSysLong }, hRes )
 
 
+
+METHOD mysql_get_client_info() CLASS WDO_MySql
+    // Esta función de C no requiere parámetros y devuelve un char*
+RETU hb_DynCall( { "mysql_get_client_info", ::pLib, ;
+                       hb_bitOr( HB_DYN_CTYPE_CHAR_PTR, ::nSysCallConv ) } )
+
+METHOD GetDllVersion() CLASS WDO_MySql
+    
+    Local cVer := "Unknown"
+    
+    IF ::pLib != NIL
+        cVer := ::mysql_get_client_info()
+    ENDIF
+
+RETURN "Library Type: " + ::cDllType + " | Client Version: " + cVer
+
 METHOD Exit() CLASS WDO_MySql
 
 	if ::lPersistent 
@@ -829,17 +857,17 @@ function hb_SysMariaDb()
 		IF hb_version( HB_VERSION_BITWIDTH ) == 64
 		
 			IF !Empty( HB_GetEnv( 'WDO_PATH_MYSQL' ) )
-				cLibName = HB_GetEnv( 'WDO_PATH_MYSQL' ) + 'libmysql64.dll'
+				cLibName = HB_GetEnv( 'WDO_PATH_MYSQL' ) + 'libmariadb64.dll'
 			ELSE
-				cLibName = "c:/Apache24/htdocs/libmysql64.dll"
+				cLibName = "c:/Apache24/htdocs/libmariadb64.dll"
 			ENDIF
 		
 		ELSE
 		
 			IF !Empty( HB_GetEnv( 'WDO_PATH_MYSQL' ) )
-				cLibName = HB_GetEnv( 'WDO_PATH_MYSQL' ) + 'libmysql.dll'
+				cLibName = HB_GetEnv( 'WDO_PATH_MYSQL' ) + 'libmariadb64.dll'
 			ELSE
-				cLibName = "c:/Apache24/htdocs/libmysql.dll"
+				cLibName = "c:/Apache24/htdocs/libmariadb64.dll"
 			ENDIF		
 		
 		ENDIF

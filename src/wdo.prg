@@ -40,14 +40,18 @@ METHOD SetError( cError ) CLASS WDO
 	::cError := cError
 	
 	IF Valtype( ::bError ) == 'B'			
-		::cError := Eval( ::bError, ::cError )																			
+		::cError := Eval( ::bError, ::cError )		
+		
+		IF ::lShowError										
+
+			? '<h3><b>Error</b>', ::cError, '</b></h3>'
+				
+		ENDIF
+		
+	ELSE 
+		UDo_Error( cError, 'WDO' )
 	ENDIF
 
-	IF ::lShowError										
-
-		? '<h3><b>Error</b>', ::cError, '</b></h3>'
-			
-	ENDIF
 
 RETU ''
 

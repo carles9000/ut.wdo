@@ -1,0 +1,18 @@
+<?prg 
+#include "lib/uhttpd2/uhttpd2.ch" 
+
+	LOCAL o			
+		
+	try
+		o := WDO_MYSQL():New( "localhost", "harbour", "hb1234", "dbharbour", 3306, 'mysql' )
+	catch oError 
+		?? oError:description, '<hr>'
+		retu ''
+	end 
+	
+	?? '<b>Version</b> ' +  o:VersionName() +  '<small style="float:right;">' + time() + '</small>'
+	?  '<b>Version Dll</b> ' +  o:GetDllVersion() , '<hr>'
+	
+
+	RETU ''
+?>

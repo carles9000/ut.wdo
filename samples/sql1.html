@@ -1,14 +1,21 @@
 <?prg 
 #include "lib/uhttpd2/uhttpd2.ch" 
 
-	LOCAL o, oRs, a
+	LOCAL o, oRs, a, oError
 	
-	o := WDO_MYSQL():New( "localhost", "harbour", "hb1234", "dbharbour", 3306 )
-
+	try
+		o := WDO_MYSQL():New( "localhost", "harbour", "hb1234", "dbharbour", 3306, 'mysql' )
+	catch oError 
+		? oError:description
+		retu '' 
+	end 
 
 	
-	?? '<b>Version</b> ' +  o:VersionName() +  '<small style="float:right;">' + time() + '</small><hr>'
-
+	?? '<b>Version</b> ' +  o:VersionName() +  '<small style="float:right;">' + time() + '</small>'
+	? '<b>Version Dll</b> ' +  o:GetDllVersion() 
+	? '<hr>'
+	//?? '<b>Version Dll</b> ' +  o:mysql_get_client_info() 
+	
 	
 	IF o:lConnect
 
